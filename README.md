@@ -16,7 +16,8 @@ This libary implements architecture patterns with the beloved
     yarn add kiss-arch
     npm i kiss-arch
 
-Library size is (js): `4.1kb` (`1.8kb` gzipped, respectively)
+Full library size, no terser: `~4kb` (`~1.5kb` gzipped, respectively).
+Footprint might be lower if you're using a tree-shaking enabled bundler.
 
 ## Usage
 
@@ -363,3 +364,5 @@ in case `getMode()` returns `development`, and the key will be rendered.
 ## Test
 
     yarn test
+
+This library comes with substantial test coverage > 90%.
