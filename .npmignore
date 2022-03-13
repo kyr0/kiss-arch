@@ -9,4 +9,3 @@ node_modules/
 jest.config.js
 tsconfig.json
 .github
-dist/src
