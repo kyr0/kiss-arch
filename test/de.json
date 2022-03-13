@@ -1,0 +1,9 @@
+{
+  "Hello world": "Hallo Welt",
+  "Hello <b>World</b>": "Hallo <b>Welt</b>",
+  "Hello world {name}": "Hallo {name} Welt",
+  "ns": {
+    "Max length {length}": "Maximale länge {length}",
+    "I drove about {km} km per {period} with an {carType}.": "I bin pro {period} ca {km} km mit einem {carType} gefahren."
+  }
+}
