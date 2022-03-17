@@ -1,8 +1,6 @@
 import { getBus } from './bus'
-import { commandWithResponse } from './commands'
 import { getGlobal, setGlobal } from './global'
 import { getMode } from './mode'
-import { getStore } from './store'
 
 export interface Option {
   [variable: string]: string

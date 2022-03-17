@@ -9,7 +9,7 @@ export type CommandActor<CommandPayload, CommandPayloadResponse> = (
 ) => Promise<CommandPayloadResponse>
 
 export type CommandHandler<ActionPayload extends CommandPayloadBase> = (payload: ActionPayload) => void
-
+export type CommandHandlerResponse<ActionPayload> = ActionPayload & CommandPayloadBase
 export type Command<P = unknown> = (payload: P) => Promise<void>
 export type CommandHandlerType = 'one-time' | 'continuous'
 
@@ -29,7 +29,6 @@ export const addCommandHandler = <CommandName, CommandPayload>(
   handlerType: CommandHandlerType = 'continuous',
   discreteCommandSequenceId?: number,
 ) => {
-  //console.log('addCommandHandler', commandName, handler)
   const bus = getCommandBus<CommandName, CommandPayload>()
   const awaitsWithResponse = typeof discreteCommandSequenceId !== 'undefined'
   const topicName = awaitsWithResponse ? getCommandResponseTopic(commandName) : commandName
@@ -44,62 +43,44 @@ export const addCommandHandler = <CommandName, CommandPayload>(
         bus.off(subscriberId)
       }
     }
-    handler(handlerPayload)
-  })
-}
-
-// runs an action without response
-export const command = async <CommandName, CommandPayload, CommandResponsePayload = unknown>(
-  commandName: CommandName,
-  payload: CommandPayload,
-  oneTimeResponseHandler?: CommandHandler<CommandResponsePayload>,
-) => {
-  commandSequenceId += 1
-
-  const bus = getCommandBus<CommandName, CommandPayload>()
-
-  //console.log('command', commandName, payload)
-  // listen for command action
-  if (typeof oneTimeResponseHandler === 'function') {
-    //console.log('oneTimeResponseHandler')
-    addCommandHandler(commandName, oneTimeResponseHandler, 'one-time', commandSequenceId)
-  }
-
-  // trigger command action
-  await bus.emit(commandName, {
-    ...payload,
-    // apply unique command sequence number
-    commandSequenceId,
+    return handler(handlerPayload)
   })
 }
 
 // runs an action and awaits an immediate response
-export const commandWithResponse = async <CommandName, CommandPayload>(
+export const runCommand = async <CommandName, CommandPayload, CommandResponsePayload = unknown>(
   commandName: CommandName,
   payload: CommandPayload,
-  oneTimeResponseHandler?: CommandHandler<CommandPayload>,
-) => {
-  commandSequenceId += 1
+): Promise<CommandHandlerResponse<CommandResponsePayload>> =>
+  new Promise((resolve) => {
+    commandSequenceId += 1
 
-  const bus = getCommandBus<CommandName, CommandPayload>()
+    const oneTimeResponseHandler: CommandHandler<CommandResponsePayload> = (payload: CommandResponsePayload) => {
+      resolve({
+        ...payload,
+        // apply unique command sequence number
+        commandSequenceId,
+      })
+    }
 
-  //console.log('command', commandName, payload)
-  // listen for command action
-  if (typeof oneTimeResponseHandler === 'function') {
-    //console.log('oneTimeResponseHandler')
-    addCommandHandler(commandName, oneTimeResponseHandler, 'one-time', commandSequenceId)
-  }
+    const bus = getCommandBus<CommandName, CommandPayload>()
 
-  // trigger command action
-  await bus.emit(commandName, {
-    ...payload,
-    // apply unique command sequence number
-    commandSequenceId,
+    // listen for command action
+    if (typeof oneTimeResponseHandler === 'function') {
+      //console.log('oneTimeResponseHandler')
+      addCommandHandler(commandName, oneTimeResponseHandler, 'one-time', commandSequenceId)
+    }
+
+    // trigger command action
+    bus.emit(commandName, {
+      ...payload,
+      // apply unique command sequence number
+      commandSequenceId,
+    })
   })
-}
 
 // register a function that handles commands and responds
-export const addCommandResponseHandler = <CommandName, CommandPayload, CommandResponsePayload>(
+export const addCommand = <CommandName, CommandPayload, CommandResponsePayload>(
   commandName: CommandName,
   actor: CommandActor<CommandPayload, CommandResponsePayload>,
 ) => {

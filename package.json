@@ -1,6 +1,6 @@
 {
   "name": "kiss-arch",
-  "version": "0.9.2",
+  "version": "0.10.0",
   "main": "index.js",
   "typings": "dist/src/index.d.ts",
   "description": "Web app architecture kept simple, stupid",
@@ -20,6 +20,7 @@
     "prebuild": "rm -rf dist",
     "build": "esbuild src/index.ts --format=cjs --bundle --minify --target=chrome58 --outfile=index.js",
     "postbuild": "tsc",
+    "predeploy": "yarn test",
     "deploy": "npm pack",
     "pretest": "yarn build",
     "test": "jest"

@@ -19,9 +19,8 @@ it('declares the bus API / CommonJS', () => {
 })
 
 it('declares the CQRS API / CommonJS', () => {
-  expect(kissArch.command).toBeInstanceOf(Function)
-  expect(kissArch.commandWithResponse).toBeInstanceOf(Function)
-  expect(kissArch.addCommandResponseHandler).toBeInstanceOf(Function)
+  expect(kissArch.addCommand).toBeInstanceOf(Function)
+  expect(kissArch.runCommand).toBeInstanceOf(Function)
 })
 
 it('declares the i18n / CommonJS', () => {
