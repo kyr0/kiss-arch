@@ -21,7 +21,7 @@
     "build": "esbuild src/index.ts --format=cjs --bundle --minify --target=chrome58 --outfile=index.js",
     "postbuild": "tsc",
     "predeploy": "yarn test",
-    "deploy": "npm pack",
+    "deploy": "npm publish",
     "pretest": "yarn build",
     "test": "jest"
   },
